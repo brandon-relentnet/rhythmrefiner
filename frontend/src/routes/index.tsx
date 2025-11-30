@@ -1,15 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
-import { FormEvent, useMemo, useState, Fragment } from 'react'
 import { Bar } from 'react-chartjs-2'
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
-  Tooltip,
+  CategoryScale,
+  Chart as ChartJS,
   Legend,
+  LinearScale,
+  Tooltip,
 } from 'chart.js'
+import { Fragment, useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
 
 export interface Track {
   name: string
@@ -22,13 +23,13 @@ export interface ArtistSummary {
   url: string
   count: number
   share: number
-  tracks: Track[]
+  tracks: Array<Track>
 }
 
 export interface PlaylistSummary {
   totalTracks: number
   uniqueArtists: number
-  artists: ArtistSummary[]
+  artists: Array<ArtistSummary>
 }
 
 interface RecommendationTrack {
@@ -54,7 +55,7 @@ interface RecommendationTrack {
 }
 
 interface RecommendationResponse {
-  recommendedTracks: RecommendationTrack[]
+  recommendedTracks: Array<RecommendationTrack>
   totalTracks: number
   playlistGenreProfile: Record<string, number> | null
   weights: Record<string, number>
@@ -74,8 +75,8 @@ const fetchPlaylistSummary = async (playlistUrl: string) => {
   })
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error(body.detail || `Request failed with ${res.status}`)
+    const errBody = await res.json().catch(() => ({}))
+    throw new Error(errBody.detail || `Request failed with ${res.status}`)
   }
 
   return (await res.json()) as PlaylistSummary
@@ -94,8 +95,8 @@ const fetchRecommendations = async (body: RecommendationsRequestBody) => {
   })
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error(body.detail || `Request failed with ${res.status}`)
+    const errBody = await res.json().catch(() => ({}))
+    throw new Error(errBody.detail || `Request failed with ${res.status}`)
   }
 
   return (await res.json()) as RecommendationResponse
@@ -142,7 +143,7 @@ function App() {
   const recsError = recommendationsQuery.error
   const recsLoading = recommendationsQuery.isPending
 
-  const topArtists: ArtistSummary[] = data?.artists.slice(0, 20) ?? []
+  const topArtists: Array<ArtistSummary> = data?.artists.slice(0, 20) ?? []
 
   const artistCountsByName = useMemo(() => {
     if (!data?.artists) return {}
@@ -175,8 +176,7 @@ function App() {
     recMode === 'lesser' &&
     derivedMaxArtistCount != null
       ? recs.recommendedTracks.filter((track) => {
-          const key = track.artistName?.toLowerCase()
-          if (!key) return true
+          const key = track.artistName.toLowerCase()
           const playlistCount = artistCountsByName[key] ?? 0
           return playlistCount <= derivedMaxArtistCount
         })
@@ -460,11 +460,10 @@ function App() {
                   </button>
                   {recs?.weights && (
                     <div className="text-[0.7rem] text-slate-400">
-                      Weighted artist{' '}
-                      {Math.round((recs.weights.artist ?? 0) * 100)}%, rank{' '}
-                      {Math.round((recs.weights.rank ?? 0) * 100)}%, genre{' '}
-                      {Math.round((recs.weights.genre ?? 0) * 100)}%, popularity{' '}
-                      {Math.round((recs.weights.popularity ?? 0) * 100)}%.
+                      Weighted artist {Math.round(recs.weights.artist * 100)}%,
+                      rank {Math.round(recs.weights.rank * 100)}%, genre{' '}
+                      {Math.round(recs.weights.genre * 100)}%, popularity{' '}
+                      {Math.round(recs.weights.popularity * 100)}%.
                     </div>
                   )}
                 </div>
