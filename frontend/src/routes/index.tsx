@@ -67,8 +67,10 @@ export const Route = createFileRoute('/')({
   component: App,
 })
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 const fetchPlaylistSummary = async (playlistUrl: string) => {
-  const res = await fetch('http://localhost:8000/api/playlist-summary', {
+  const res = await fetch(`${API_BASE}/api/playlist-summary`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ playlistUrl }),
@@ -88,7 +90,7 @@ interface RecommendationsRequestBody {
 }
 
 const fetchRecommendations = async (body: RecommendationsRequestBody) => {
-  const res = await fetch('http://localhost:8000/api/recommendations', {
+  const res = await fetch(`${API_BASE}/api/recommendations`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
