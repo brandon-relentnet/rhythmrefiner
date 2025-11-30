@@ -21,6 +21,8 @@ ALLOW_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "https://rhythmrefiner.com",
+    "https://www.rhythmrefiner.com",
+    "https://api.rhythmrefiner.com",
 ]
 
 app.add_middleware(
